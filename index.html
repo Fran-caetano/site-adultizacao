@@ -103,7 +103,8 @@
     <h1><img src="infancia.jpeg" alt="Logo" width="50" height="50" style="border-radius:50%;"> Infância Sem Pressa</h1>
     <p class="lead">Conscientização sobre a adultização. Conheça os sinais, previna e denuncie. Baixe a cartilha e participe das atividades interativas.</p>
     <div class="cta">
-      <a href="cartilha-infancia-sem-presa.pdf" download class="btn btn-primary">Baixar Cartilha</a>
+      <!-- Botão de download corrigido -->
+      <a href="./cartilha-infancia-sem-presa.pdf" download="cartilha-infancia-sem-presa.pdf" class="btn btn-primary">📘 Baixar Cartilha</a>
       <a href="#quiz" class="btn btn-soft">Iniciar Quiz</a>
       <a href="#jogo" class="btn btn-soft">Jogo Educativo</a>
       <a href="https://wa.me/5582981884515?text=Olá,%20quero%20registrar%20uma%20denúncia%20sobre%20possível%20caso%20de%20adultização%20infantil." target="_blank" class="btn btn-primary">Denunciar (MP-AL)</a>
@@ -200,7 +201,7 @@
     const cursor=document.querySelector(".cursor");
     document.addEventListener("mousemove",e=>{cursor.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;});
 
-    // Denúncia
+    // Denúncia via WhatsApp
     document.getElementById("btnDenunciar").onclick=()=>{
       const tipo=document.getElementById("tipoDenuncia").value;
       const msg=encodeURIComponent(`Olá, quero registrar uma denúncia sobre: ${tipo}.`);
@@ -260,67 +261,37 @@
       "Brincar é um direito da criança!","A infância precisa de tempo para sonhar.","Amor e escuta protegem mais que cobrança.","Deixe a criança errar e aprender com calma.",
       "Proteção é permitir o ritmo da infância.","O brincar desenvolve empatia e criatividade.","Não apresse o crescimento, cultive a infância.","Conversar é sempre o primeiro passo.",
       "A infância é fase de descobertas, não de pressa.","Limite é cuidado, não repressão.","Deixe o celular de lado e viva o momento com eles.","Elogie o esforço, não só o resultado.",
-      "Adultizar é roubar a leveza da infância.","A presença vale mais que qualquer presente.","Toda criança precisa de colo e paciência.","Cuidar da infância é cuidar do futuro.",
-      "Ouça mais, julgue menos.","Respeite o tempo e a curiosidade infantil.","Criança não precisa ser perfeita, precisa ser feliz.","Proteja, oriente e ame sem pressa."
+      "Adultizar é roubar a leveza da infância.","A presença vale mais que qualquer presente.","Toda criança precisa de colo e de tempo."
     ];
-    function draw(){
-      ctx.fillStyle="#f0f8ff";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle="#5b8cff";
-      snake.forEach(s=>ctx.fillRect(s.x*box,s.y*box,box-2,box-2));
-      ctx.fillStyle="#ff9aa2";
-      ctx.fillRect(food.x*box,food.y*box,box-2,box-2);
-    }
-    function move(){
+    function updateGame(){
       if(!gameActive)return;
-      const head={...snake[0]};
-      if(dir==="right")head.x++;
-      if(dir==="left")head.x--;
-      if(dir==="up")head.y--;
-      if(dir==="down")head.y++;
+      let head={...snake[0]};
+      if(dir==="left")head.x--;if(dir==="right")head.x++;
+      if(dir==="up")head.y--;if(dir==="down")head.y++;
+      if(head.x<0||head.y<0||head.x>=canvas.width/box||head.y>=canvas.height/box||snake.some(s=>s.x===head.x&&s.y===head.y)){
+        gameActive=false;alert("Fim de jogo! Proteja a infância 💛");clearInterval(interval);return;
+      }
       snake.unshift(head);
       if(head.x===food.x&&head.y===food.y){
-        document.getElementById("gameFact").textContent=facts[factIndex%facts.length];
-        factIndex++;food={x:Math.floor(Math.random()*18),y:Math.floor(Math.random()*18)};
+        food={x:Math.floor(Math.random()*(canvas.width/box)),y:Math.floor(Math.random()*(canvas.height/box))};
+        document.getElementById("gameFact").textContent=facts[factIndex];
+        factIndex=(factIndex+1)%facts.length;
       }else snake.pop();
-      if(head.x<0||head.y<0||head.x>=20||head.y>=20){
-        clearInterval(interval);gameActive=false;document.getElementById("gameFact").textContent="Fim de jogo! Tente novamente!";
-      }
-      draw();
+      ctx.fillStyle="#f0f8ff";ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="#6bd3b6";snake.forEach(s=>ctx.fillRect(s.x*box,s.y*box,box-1,box-1));
+      ctx.fillStyle="#5b8cff";ctx.fillRect(food.x*box,food.y*box,box-1,box-1);
     }
-    document.getElementById("startGame").onclick=()=>{
-      clearInterval(interval);snake=[{x:5,y:5}];dir="right";gameActive=true;interval=setInterval(move,180);
-    };
-    document.getElementById("pauseGame").onclick=()=>{
-      gameActive=!gameActive;if(gameActive)interval=setInterval(move,180);else clearInterval(interval);
-    };
+    document.getElementById("startGame").onclick=()=>{if(!gameActive){gameActive=true;interval=setInterval(updateGame,120);}};
+    document.getElementById("pauseGame").onclick=()=>{gameActive=false;clearInterval(interval);};
     document.addEventListener("keydown",e=>{
-      if(gameActive&&["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
-        e.preventDefault();
-        if(e.key==="ArrowUp"&&dir!=="down")dir="up";
-        if(e.key==="ArrowDown"&&dir!=="up")dir="down";
-        if(e.key==="ArrowLeft"&&dir!=="right")dir="left";
-        if(e.key==="ArrowRight"&&dir!=="left")dir="right";
-      }
+      if(e.key==="ArrowLeft"&&dir!=="right")dir="left";
+      if(e.key==="ArrowRight"&&dir!=="left")dir="right";
+      if(e.key==="ArrowUp"&&dir!=="down")dir="up";
+      if(e.key==="ArrowDown"&&dir!=="up")dir="down";
     });
-
-    // Controles móveis
     document.querySelectorAll(".mobile-controls button").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const d=btn.dataset.dir;
-        if(d==="up"&&dir!=="down")dir="up";
-        if(d==="down"&&dir!=="up")dir="down";
-        if(d==="left"&&dir!=="right")dir="left";
-        if(d==="right"&&dir!=="left")dir="right";
-      });
+      btn.addEventListener("click",()=>{dir=btn.dataset.dir;});
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
