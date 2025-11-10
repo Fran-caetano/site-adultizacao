@@ -29,6 +29,7 @@
       background:linear-gradient(180deg,#ffffff 0%,#f8fafc 80%);
       line-height:1.6;
       -webkit-font-smoothing:antialiased;
+      overflow-x: hidden;
     }
 
     .container{max-width:var(--container);margin:0 auto;padding:0 1rem}
@@ -87,6 +88,7 @@
 
 <body>
   <div class="cursor"></div>
+
   <nav class="nav">
     <div class="container nav-inner">
       <div class="brand">
@@ -103,7 +105,6 @@
     <h1><img src="infancia.jpeg" alt="Logo" width="50" height="50" style="border-radius:50%;"> Infância Sem Pressa</h1>
     <p class="lead">Conscientização sobre a adultização. Conheça os sinais, previna e denuncie. Baixe a cartilha e participe das atividades interativas.</p>
     <div class="cta">
-      <!-- Botão de download corrigido -->
       <a href="./cartilha-infancia-sem-presa.pdf" download="cartilha-infancia-sem-presa.pdf" class="btn btn-primary">📘 Baixar Cartilha</a>
       <a href="#quiz" class="btn btn-soft">Iniciar Quiz</a>
       <a href="#jogo" class="btn btn-soft">Jogo Educativo</a>
@@ -260,38 +261,4 @@
     const facts=[
       "Brincar é um direito da criança!","A infância precisa de tempo para sonhar.","Amor e escuta protegem mais que cobrança.","Deixe a criança errar e aprender com calma.",
       "Proteção é permitir o ritmo da infância.","O brincar desenvolve empatia e criatividade.","Não apresse o crescimento, cultive a infância.","Conversar é sempre o primeiro passo.",
-      "A infância é fase de descobertas, não de pressa.","Limite é cuidado, não repressão.","Deixe o celular de lado e viva o momento com eles.","Elogie o esforço, não só o resultado.",
-      "Adultizar é roubar a leveza da infância.","A presença vale mais que qualquer presente.","Toda criança precisa de colo e de tempo."
-    ];
-    function updateGame(){
-      if(!gameActive)return;
-      let head={...snake[0]};
-      if(dir==="left")head.x--;if(dir==="right")head.x++;
-      if(dir==="up")head.y--;if(dir==="down")head.y++;
-      if(head.x<0||head.y<0||head.x>=canvas.width/box||head.y>=canvas.height/box||snake.some(s=>s.x===head.x&&s.y===head.y)){
-        gameActive=false;alert("Fim de jogo! Proteja a infância 💛");clearInterval(interval);return;
-      }
-      snake.unshift(head);
-      if(head.x===food.x&&head.y===food.y){
-        food={x:Math.floor(Math.random()*(canvas.width/box)),y:Math.floor(Math.random()*(canvas.height/box))};
-        document.getElementById("gameFact").textContent=facts[factIndex];
-        factIndex=(factIndex+1)%facts.length;
-      }else snake.pop();
-      ctx.fillStyle="#f0f8ff";ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle="#6bd3b6";snake.forEach(s=>ctx.fillRect(s.x*box,s.y*box,box-1,box-1));
-      ctx.fillStyle="#5b8cff";ctx.fillRect(food.x*box,food.y*box,box-1,box-1);
-    }
-    document.getElementById("startGame").onclick=()=>{if(!gameActive){gameActive=true;interval=setInterval(updateGame,120);}};
-    document.getElementById("pauseGame").onclick=()=>{gameActive=false;clearInterval(interval);};
-    document.addEventListener("keydown",e=>{
-      if(e.key==="ArrowLeft"&&dir!=="right")dir="left";
-      if(e.key==="ArrowRight"&&dir!=="left")dir="right";
-      if(e.key==="ArrowUp"&&dir!=="down")dir="up";
-      if(e.key==="ArrowDown"&&dir!=="up")dir="down";
-    });
-    document.querySelectorAll(".mobile-controls button").forEach(btn=>{
-      btn.addEventListener("click",()=>{dir=btn.dataset.dir;});
-    });
-  </script>
-</body>
-</html>
+      "A infância é fase de descobertas, não de pressa.","Limite é cuidado, não repressão.","Deixe o celular de lado e viva o momento com eles.","Elogie o esforço, não só o resultado
