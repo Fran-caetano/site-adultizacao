@@ -250,15 +250,142 @@
     };
     restartBtn.onclick=()=>{currentQuestion=0;loadQuestion();restartBtn.style.display="none";};
     loadQuestion();
-
+    
     // JOGO COBRINHA
-    const canvas=document.getElementById("snakeCanvas");
-    const ctx=canvas.getContext("2d");
-    const box=18;
-    let snake=[{x:5,y:5}];
-    let food={x:10,y:10};
-    let dir="right";let gameActive=false;let interval;let factIndex=0;
-    const facts=[
-      "Brincar é um direito da criança!","A infância precisa de tempo para sonhar.","Amor e escuta protegem mais que cobrança.","Deixe a criança errar e aprender com calma.",
-      "Proteção é permitir o ritmo da infância.","O brincar desenvolve empatia e criatividade.","Não apresse o crescimento, cultive a infância.","Conversar é sempre o primeiro passo.",
-      "A infância é fase de descobertas, não de pressa.","Limite é cuidado, não repressão.","Deixe o celular de lado e viva o momento com eles.","Elogie o esforço, não só o resultado
+    const canvas = document.getElementById("snakeCanvas");
+    const ctx = canvas.getContext("2d");
+    const box = 18;
+    let snake = [{ x: 5, y: 5 }];
+    let food = { x: 10, y: 10 };
+    let dir = "right";
+    let gameActive = false;
+    let interval;
+    let factIndex = 0;
+    const facts = [
+      "Brincar é um direito da criança!",
+      "A infância precisa de tempo para sonhar.",
+      "Amor e escuta protegem mais que cobrança.",
+      "Deixe a criança errar e aprender com calma.",
+      "Proteção é permitir o ritmo da infância.",
+      "O brincar desenvolve empatia e criatividade.",
+      "Não apresse o crescimento, cultive a infância.",
+      "Conversar é sempre o primeiro passo.",
+      "A infância é fase de descobertas, não de pressa.",
+      "Limite é cuidado, não repressão.",
+      "Deixe o celular de lado e viva o momento com eles.",
+      "Elogie o esforço, não só o resultado."
+    ];
+
+    function draw() {
+      ctx.fillStyle = "#f0f8ff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // desenha cobra
+      snake.forEach((part, i) => {
+        ctx.fillStyle = i === 0 ? "#5b8cff" : "#6bd3b6";
+        ctx.fillRect(part.x * box, part.y * box, box - 2, box - 2);
+      });
+
+      // desenha comida
+      ctx.fillStyle = "#ffb703";
+      ctx.fillRect(food.x * box, food.y * box, box - 2, box - 2);
+    }
+
+    function update() {
+      if (!gameActive) return;
+
+      let head = { ...snake[0] };
+
+      if (dir === "left") head.x--;
+      if (dir === "right") head.x++;
+      if (dir === "up") head.y--;
+      if (dir === "down") head.y++;
+
+      // colisão
+      if (
+        head.x < 0 ||
+        head.y < 0 ||
+        head.x * box >= canvas.width ||
+        head.y * box >= canvas.height ||
+        snake.some((s) => s.x === head.x && s.y === head.y)
+      ) {
+        clearInterval(interval);
+        gameActive = false;
+        document.getElementById("gameFact").textContent = "Fim de jogo! Tente novamente 💛";
+        return;
+      }
+
+      // comida
+      if (head.x === food.x && head.y === food.y) {
+        snake.unshift(head);
+        food = {
+          x: Math.floor(Math.random() * (canvas.width / box)),
+          y: Math.floor(Math.random() * (canvas.height / box))
+        };
+        factIndex = (factIndex + 1) % facts.length;
+        document.getElementById("gameFact").textContent = facts[factIndex];
+      } else {
+        snake.pop();
+        snake.unshift(head);
+      }
+
+      draw();
+    }
+
+    function startGame() {
+      if (gameActive) return;
+      snake = [{ x: 5, y: 5 }];
+      dir = "right";
+      food = { x: 10, y: 10 };
+      gameActive = true;
+      interval = setInterval(update, 180);
+      document.getElementById("gameFact").textContent = "Vamos jogar! 💙";
+    }
+
+    function pauseGame() {
+      gameActive = false;
+      clearInterval(interval);
+      document.getElementById("gameFact").textContent = "Jogo pausado ⏸️";
+    }
+
+    document.getElementById("startGame").onclick = startGame;
+    document.getElementById("pauseGame").onclick = pauseGame;
+
+    // Controles do teclado
+    document.addEventListener("keydown", (e) => {
+      // impede a página de rolar com as setas
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+        e.preventDefault();
+      }
+      if (!gameActive) return;
+      if (e.key === "ArrowLeft" && dir !== "right") dir = "left";
+      if (e.key === "ArrowRight" && dir !== "left") dir = "right";
+      if (e.key === "ArrowUp" && dir !== "down") dir = "up";
+      if (e.key === "ArrowDown" && dir !== "up") dir = "down";
+    });
+
+    // Controles no celular
+    document.querySelectorAll(".mobile-controls button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const newDir = btn.dataset.dir;
+        if (
+          (newDir === "left" && dir !== "right") ||
+          (newDir === "right" && dir !== "left") ||
+          (newDir === "up" && dir !== "down") ||
+          (newDir === "down" && dir !== "up")
+        ) dir = newDir;
+      });
+    });
+
+    // Centraliza e adapta o canvas em qualquer tela
+    function resizeCanvas() {
+      const maxSize = Math.min(window.innerWidth * 0.9, 400);
+      canvas.style.width = maxSize + "px";
+      canvas.style.height = maxSize + "px";
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+  </script>
+</body>
+</html>
+
