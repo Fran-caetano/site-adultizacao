@@ -105,7 +105,7 @@
     <h1><img src="infancia.jpeg" alt="Logo" width="50" height="50" style="border-radius:50%;"> Infância Sem Pressa</h1>
     <p class="lead">Conscientização sobre a adultização. Conheça os sinais, previna e denuncie. Baixe a cartilha e participe das atividades interativas.</p>
     <div class="cta">
-      <a href="./cartilha-infancia-sem-presa.pdf" download class="btn btn-primary">📘 Baixar Cartilha</a>
+      <a href="./cartilha-infancia-sem-presa.pdf" download="cartilha-infancia-sem-presa.pdf" class="btn btn-primary">📘 Baixar Cartilha</a>
       <a href="#quiz" class="btn btn-soft">Iniciar Quiz</a>
       <a href="#jogo" class="btn btn-soft">Jogo Educativo</a>
       <a href="https://wa.me/5582981884515?text=Olá,%20quero%20registrar%20uma%20denúncia%20sobre%20possível%20caso%20de%20adultização%20infantil." target="_blank" class="btn btn-primary">Denunciar (MP-AL)</a>
@@ -246,7 +246,7 @@
     nextBtn.onclick=()=>{
       currentQuestion++;
       if(currentQuestion<quizData.length){loadQuestion();nextBtn.style.display="none";}
-      else{qEl.textContent="🎉 Parabéns! Você completou o quiz.";optEl.innerHTML="";nextBtn.style.display="none";restartBtn.style.display="inline-block";}
+      else{qEl.textContent="Parabéns! Você completou o quiz.";optEl.innerHTML="";nextBtn.style.display="none";restartBtn.style.display="inline-block";}
     };
     restartBtn.onclick=()=>{currentQuestion=0;loadQuestion();restartBtn.style.display="none";};
     loadQuestion();
@@ -307,11 +307,11 @@
         head.y < 0 ||
         head.x * box >= canvas.width ||
         head.y * box >= canvas.height ||
-        snake.some((s, idx) => idx !== 0 && s.x === head.x && s.y === head.y)
+        snake.some((s) => s.x === head.x && s.y === head.y)
       ) {
         clearInterval(interval);
         gameActive = false;
-        document.getElementById("gameFact").textContent = "💛 Fim de jogo! Tente novamente!";
+        document.getElementById("gameFact").textContent = "Fim de jogo! Tente novamente 💛";
         return;
       }
 
@@ -338,17 +338,14 @@
       dir = "right";
       food = { x: 10, y: 10 };
       gameActive = true;
-      clearInterval(interval);
-      interval = setInterval(update, 160);
+      interval = setInterval(update, 180);
       document.getElementById("gameFact").textContent = "Vamos jogar! 💙";
-      draw();
     }
 
     function pauseGame() {
-      if (!gameActive) return;
       gameActive = false;
       clearInterval(interval);
-      document.getElementById("gameFact").textContent = "⏸️ Jogo pausado";
+      document.getElementById("gameFact").textContent = "Jogo pausado ⏸️";
     }
 
     document.getElementById("startGame").onclick = startGame;
@@ -356,7 +353,10 @@
 
     // Controles do teclado
     document.addEventListener("keydown", (e) => {
-      if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
+      // impede a página de rolar com as setas
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+        e.preventDefault();
+      }
       if (!gameActive) return;
       if (e.key === "ArrowLeft" && dir !== "right") dir = "left";
       if (e.key === "ArrowRight" && dir !== "left") dir = "right";
@@ -377,7 +377,7 @@
       });
     });
 
-    // Ajusta tamanho do canvas
+    // Centraliza e adapta o canvas em qualquer tela
     function resizeCanvas() {
       const maxSize = Math.min(window.innerWidth * 0.9, 400);
       canvas.style.width = maxSize + "px";
@@ -387,5 +387,3 @@
     resizeCanvas();
   </script>
 </body>
-</html>
-   
